@@ -4,7 +4,7 @@
       <el-input placeholder="搜索名称" class="filter-item" v-model="listQuery.name" style="width: 200px;" @keyup.enter.native="handleFilter"/>
       <region @selectRegion="searchRegion" :selectOption="selectOption" class="filter-item"></region>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
     </div>
     <el-table
       v-loading="listLoading"
