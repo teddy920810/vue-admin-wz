@@ -29,7 +29,7 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    name: 'Dashboard',
+    name: '首页',
     hidden: true,
     children: [{
       path: 'dashboard',
@@ -49,7 +49,6 @@ export const constantRouterMap = [
       }
     ]
   },
-
   {
     path: '/leader',
     component: Layout,
@@ -62,8 +61,44 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/region',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: '地区',
+        component: () => import('@/views/region/list'),
+        meta: { title: '地区', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/category',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: '类别',
+        component: () => import('@/views/category/list'),
+        meta: { title: '类别', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/territory',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: '领域',
+        component: () => import('@/views/territory/list'),
+        meta: { title: '领域', icon: 'form' }
+      }
+    ]
+  },
 
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/', hidden: true }
 ]
 
 export default new Router({

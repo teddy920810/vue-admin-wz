@@ -11,22 +11,37 @@
       border
       fit
       highlight-current-row>
-      <el-table-column label="标题" width="195">
+      <el-table-column label="标题">
         <template slot-scope="scope">
           {{ scope.row.title }}
         </template>
       </el-table-column>
-      <el-table-column label="内容" width="195">
+      <el-table-column label="内容">
         <template slot-scope="scope">
           {{ scope.row.content }}
         </template>
       </el-table-column>
-      <el-table-column label="提问者" width="95">
+      <el-table-column label="提问者">
         <template slot-scope="scope">
           {{ scope.row.ask_member_name }}
         </template>
       </el-table-column>
-      <el-table-column label="回答" width="195">
+      <el-table-column label="领导名称">
+        <template slot-scope="scope">
+          {{ scope.row.leader }}
+        </template>
+      </el-table-column>
+      <el-table-column label="类别">
+        <template slot-scope="scope">
+          {{ scope.row.category }}
+        </template>
+      </el-table-column>
+      <el-table-column label="领域">
+        <template slot-scope="scope">
+          {{ scope.row.territory }}
+        </template>
+      </el-table-column>
+      <el-table-column label="回答">
         <template slot-scope="scope">
           {{ scope.row.answer }}
         </template>
@@ -42,8 +57,8 @@
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">回答</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.row)">删除</el-button>
+          <el-button type="primary" size="small" @click="handleUpdate(scope.row)">回答</el-button>
+          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.row)" circle></el-button>
         </template>
       </el-table-column>
     </el-table>

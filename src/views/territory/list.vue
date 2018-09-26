@@ -2,7 +2,6 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input placeholder="搜索名称" class="filter-item" v-model="listQuery.name" style="width: 200px;" @keyup.enter.native="handleFilter"/>
-      <region @selectRegion="searchRegion" :selectOption="selectOption" class="filter-item"></region>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
     </div>
@@ -13,20 +12,14 @@
       border
       fit
       highlight-current-row>
-      <el-table-column label="领导姓名" width="195">
+      <el-table-column label="ID" width="195">
+        <template slot-scope="scope">
+          {{ scope.row.id }}
+        </template>
+      </el-table-column>
+      <el-table-column label="类别名称" width="310" align="center">
         <template slot-scope="scope">
           {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column label="所属地域" width="310" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.province }}</span>
-          <span>{{ scope.row.city }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="描述" width="310" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.desc }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
@@ -47,17 +40,11 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"/>
     </div>
-    <!-- 新增/修改领导 -->
+    <!-- 新增/修改类别 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :rules="rules" :model="territory" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="leader.name"/>
-        </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="leader.desc"/>
-        </el-form-item>
-        <el-form-item label="所属地区" prop="city_id">
-          <region @selectRegion="selectRegion" :selectOption="[leader.province_id,leader.city_id]"></region>
+          <el-input v-model="territory.name"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -70,11 +57,9 @@
 </template>
 
 <script>
-import { getList, addLeader, editLeader, deleteLeader } from '@/api/leader'
-import Region from '../region/index.vue'
+import { getList, addTerritory, editTerritory, deleteTerritory } from '@/api/territory'
 
 export default {
-  components: { Region },
   data() {
     return {
       list: null,
@@ -83,16 +68,11 @@ export default {
       listQuery: {
         page: 1,
         page_size: 10,
-        name: null,
-        province_id: null,
-        city_id: null
+        name: null
       },
-      leader: {
+      territory: {
         id: undefined,
         name: '',
-        desc: '',
-        province_id: '',
-        city_id: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -104,13 +84,6 @@ export default {
         name: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-        ],
-        desc: [
-          { required: true, message: '请输入', trigger: 'blur' },
-          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-        ],
-        city_id: [
-          { required: true, message: '请选择', trigger: 'blur' },
         ]
       },
       selectOption: []
@@ -128,17 +101,14 @@ export default {
         this.listLoading = false
       })
     },
-    resetLeader() {
-      this.leader = {
+    resetTerritory() {
+      this.territory = {
         id: undefined,
-        name: '',
-        desc: '',
-        province_id: '',
-        city_id: ''
+        name: ''
       }
     },
     handleCreate() {
-      this.resetLeader()
+      this.resetTerritory()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -148,8 +118,8 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log(this.leader)
-          addLeader(this.leader).then(() => {
+          console.log(this.territory)
+          addTerritory(this.territory).then(() => {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
@@ -163,7 +133,7 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.leader = Object.assign({}, row) // copy obj
+      this.territory = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -173,7 +143,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          editLeader(this.leader).then(() => {
+          editTerritory(this.territory).then(() => {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
@@ -188,7 +158,7 @@ export default {
     },
     deleteData(row) {
       const  deleteData = {id: row.id}
-      deleteLeader(deleteData).then(() => {
+      deleteTerritory(deleteData).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -209,15 +179,6 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getList()
-    },
-    selectRegion(data) {
-      console.log(data)
-      this.leader.province_id = data[0]
-      this.leader.city_id = data[1]
-    },
-    searchRegion(data) {
-      this.listQuery.province_id = data[0]
-      this.listQuery.city_id = data[1]
     }
   }
 }
