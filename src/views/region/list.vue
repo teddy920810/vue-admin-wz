@@ -14,7 +14,7 @@ export default {
     return {
       columns: [
         {
-          text: '事件',
+          text: '地区',
           value: 'title',
           width: 200
         },
