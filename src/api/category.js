@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getList(params) {
   return request({
-    url: '/category/list',
+    url: '/Category/list',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getList(params) {
 
 export function addCategory(data) {
   return request({
-    url: '/category/add',
+    url: '/Category/add',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function addCategory(data) {
 
 export function editCategory(data) {
   return request({
-    url: '/category/edit',
+    url: '/Category/edit',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function editCategory(data) {
 
 export function deleteCategory(data) {
   return request({
-    url: '/category/del',
+    url: '/Category/del',
     method: 'post',
     data
   })

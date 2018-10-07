@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getList(params) {
   return request({
-    url: '/leader/list',
+    url: '/Leader/list',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getList(params) {
 
 export function addLeader(data) {
   return request({
-    url: '/leader/add',
+    url: '/Leader/add',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function addLeader(data) {
 
 export function editLeader(data) {
   return request({
-    url: '/leader/edit',
+    url: '/Leader/edit',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function editLeader(data) {
 
 export function deleteLeader(data) {
   return request({
-    url: '/leader/del',
+    url: '/Leader/del',
     method: 'post',
     data
   })

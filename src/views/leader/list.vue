@@ -57,7 +57,7 @@
           <el-input v-model="leader.desc"/>
         </el-form-item>
         <el-form-item label="所属地区" prop="city_id">
-          <region @selectRegion="selectRegion" :selectOption="[leader.province_id,leader.city_id]"></region>
+          <region :selectOption="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

@@ -17,7 +17,7 @@ export function getCity(provice_id) {
 
 export function getRegion() {
   return request({
-    url: '/location/list',
+    url: '/Location/list',
     method: 'get'
   })
 }

@@ -1,22 +1,21 @@
 <template>
-    <el-cascader
-      :options="regions"
-      @active-item-change="handleItemChange"
-      @change="handleValueChang"
-      :props="props"
-      v-model="selectOption"
-      placeholder="选择地区"
-    ></el-cascader>
+  <el-cascader
+    :options="regions"
+    :props="props"
+    v-model="selectOption"
+    placeholder="选择地区"
+    @active-item-change="handleItemChange"
+    @change="handleValueChang"/>
 </template>
 
 <script>
 import { getRegion } from '@/api/region'
 export default {
   props: {
-    selectOption:{
-      type:Array,
-      default:[5,64]
-    },
+    selectOption: {
+      type: Array,
+      default: [5, 64]
+    }
   },
   data() {
     return {
