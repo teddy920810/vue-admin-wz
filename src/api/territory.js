@@ -31,3 +31,11 @@ export function deleteTerritory(data) {
     data
   })
 }
+
+export function getTerritory() {
+  return request({
+    url: '/Category/all',
+    method: 'get'
+  })
+}
+

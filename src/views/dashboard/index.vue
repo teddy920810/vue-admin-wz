@@ -8,18 +8,17 @@
       :show-close="false"
       title="完善领导信息">
       <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="领导名称" prop="office_name">
-          <el-input v-model="leader.leader_name"/>
+        <el-form-item label="领导名称" prop="name">
+          <el-input v-model="leader.name"/>
         </el-form-item>
-        <el-form-item label="描述" prop="office_desc">
-          <el-input v-model="leader.leader_desc"/>
+        <el-form-item label="描述" prop="desc">
+          <el-input v-model="leader.desc"/>
         </el-form-item>
-        <el-form-item label="所属地区" prop="leader_city_id">
-          <region :select-option="[leader.leader_province_id,leader.leader_city_id]" @selectRegion="selectRegion"/>
+        <el-form-item label="所属地区" prop="city_id">
+          <region :select-option="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="saveData">保存</el-button>
       </div>
     </el-dialog>
@@ -28,7 +27,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { bindGovernment } from '@/api/leader'
+import { bindLeader } from '@/api/leader'
 import Region from '../region/index.vue'
 
 export default {
@@ -39,21 +38,21 @@ export default {
       dialogFormVisible: false,
       leader: {
         user_id: undefined,
-        leader_name: '',
-        leader_desc: '',
-        leader_province_id: '',
-        leader_city_id: ''
+        name: '',
+        desc: '',
+        province_id: '',
+        city_id: ''
       },
       rules: {
-        leader_name: [
+        name: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
-        leader_desc: [
+        desc: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
-        leader_city_id: [
+        city_id: [
           { required: true, message: '请选择', trigger: 'blur' }
         ]
       }
@@ -72,8 +71,7 @@ export default {
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          bindGovernment(this.leader).then(() => {
-            this.getList()
+          bindLeader(this.leader).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -86,8 +84,8 @@ export default {
       })
     },
     selectRegion(data) {
-      this.leader.leader_province_id = data[0]
-      this.leader.leader_city_id = data[1]
+      this.leader.province_id = data[0]
+      this.leader.city_id = data[1]
     }
   }
 }

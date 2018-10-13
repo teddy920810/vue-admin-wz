@@ -11,12 +11,20 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+import moment from 'moment'
+import Global from './utils/global.vue'
+
 import '@/icons' // icon
 import '@/permission' // permission control
 
 Vue.use(ElementUI)
-
+Vue.prototype.GLOBAL = Global
 Vue.config.productionTip = false
+
+Vue.filter('timeFilter', function(value, formatString) {
+  formatString = formatString || 'YYYY-MM-DD HH:mm:ss'
+  return moment(value * 1000).format(formatString)
+})
 
 new Vue({
   el: '#app',

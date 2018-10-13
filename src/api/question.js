@@ -31,3 +31,11 @@ export function deleteQuestion(data) {
     data
   })
 }
+
+export function getQusetionDetail(params) {
+  return request({
+    url: '/Question/detail',
+    method: 'get',
+    params
+  })
+}

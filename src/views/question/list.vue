@@ -1,7 +1,15 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input placeholder="搜索标题" v-model="listQuery.title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input v-model="listQuery.title" placeholder="搜索标题" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <!--<category class="filter-item" @selectChange="categorySelectChange"/>
+      <territory class="filter-item" />-->
+      <el-select v-model="listQuery.category_id" placeholder="请选择分类" style="width: 200px;" class="filter-item">
+        <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name" :value="item.id"/>
+      </el-select>
+      <el-select v-model="listQuery.territory_id" placeholder="请选择领域" style="width: 200px;" class="filter-item">
+        <el-option v-for="item in territoryOptions" :key="item.id" :label="item.name" :value="item.id"/>
+      </el-select>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
     </div>
     <el-table
@@ -15,9 +23,14 @@
           {{ scope.row.title }}
         </template>
       </el-table-column>
-      <el-table-column label="内容">
+      <el-table-column label="图片">
         <template slot-scope="scope">
-          {{ scope.row.content }}
+          <el-popover trigger="hover" placement="top">
+            <img :src="GLOBAL.servicePath + questionDetail.image" width="180" height="180">
+            <div slot="reference" class="name-wrapper">
+              <img :src="GLOBAL.servicePath + questionDetail.image" width="80" height="80">
+            </div>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="提问者">
@@ -45,26 +58,38 @@
           {{ scope.row.answer }}
         </template>
       </el-table-column>
+      <el-table-column label="提问时间">
+        <template slot-scope="scope">
+          {{ scope.row.create_time | timeFilter }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="状态">
         <template slot-scope="scope">
           <el-tag>{{ scope.row.status | statusFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="280">
+      <el-table-column label="操作" width="190">handelQuestionDetail
         <template slot-scope="scope">
-          <span style="width: 60px">
-            <el-button v-if="scope.row.status==0 || scope.row.status==2" type="success" size="small" round @click="auditQ(scope.row, 1)">通过</el-button>
-          </span>
-          <span style="width: 60px">
-            <el-button v-if="scope.row.status==0 || scope.row.status==1" type="danger" size="small" round @click="auditQ(scope.row, 2)">拒绝</el-button>
-          </span>
-          <span style="width: 80px">
-            <el-button v-if="scope.row.answer==''" type="primary" size="small" @click="handleUpdate(scope.row)">回答</el-button>
-            <el-button v-else type="primary" size="small" @click="handleUpdate(scope.row)">修改回答</el-button>
-          </span>
-          <span style="width: 30px">
-            <el-button type="danger" size="small" icon="el-icon-delete" circle @click="deleteData(scope.row)"/>
-          </span>
+          <div style="margin-bottom: 5px">
+            <span style="width: 80px">
+              <el-button type="info" size="mini" @click="handelQuestionDetail(scope.row)">查看详情</el-button>
+            </span>
+            <span style="width: 80px">
+              <el-button v-if="scope.row.answer==''" type="primary" size="mini" @click="handleUpdate(scope.row)">回答</el-button>
+              <el-button v-else type="primary" size="mini" @click="handleUpdate(scope.row)">修改回答</el-button>
+            </span>
+          </div>
+          <div>
+            <span style="width: 30px">
+              <el-button type="danger" size="small" icon="el-icon-delete" circle @click="deleteData(scope.row)"/>
+            </span>
+            <span style="width: 60px">
+              <el-button v-if="scope.row.status==0 || scope.row.status==2" type="success" size="mini" @click="auditQ(scope.row, 1)">通过</el-button>
+            </span>
+            <span style="width: 60px">
+              <el-button v-if="scope.row.status==0 || scope.row.status==1" type="danger" size="mini" @click="auditQ(scope.row, 2)">拒绝</el-button>
+            </span>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -91,13 +116,52 @@
         <el-button type="primary" @click="answerQ">保存</el-button>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="dialogDetailVisible" title="问答详情">
+      <el-form label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="标题:">
+          {{ questionDetail.title }}
+        </el-form-item>
+        <el-form-item label="提问者:">
+          {{ questionDetail.ask_member_name }}
+        </el-form-item>
+        <el-form-item label="领导:">
+          {{ questionDetail.leader_name }}
+        </el-form-item>
+        <el-form-item label="分类:">
+          {{ questionDetail.category }}
+        </el-form-item>
+        <el-form-item label="领域:">
+          {{ questionDetail.territory }}
+        </el-form-item>
+        <el-form-item label="状态:">
+          <el-tag>{{ questionDetail.status | statusFilter }}</el-tag>
+        </el-form-item>
+        <el-form-item label="图片:">
+          <img :src="GLOBAL.servicePath + questionDetail.image" width="200" height="200">
+        </el-form-item>
+        <el-form-item label="问题详情:">
+          {{ questionDetail.content }}
+        </el-form-item>
+        <el-form-item label="问题详情:">
+          {{ questionDetail.content }}
+        </el-form-item>
+        <el-form-item label="回答:">
+          {{ questionDetail.answer }}
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList, answerQ, audit, deleteQuestion } from '@/api/question'
+import { getList, answerQ, audit, deleteQuestion, getQusetionDetail } from '@/api/question'
+import { getCategory } from '@/api/category'
+import { getTerritory } from '@/api/territory'
+import Category from '../category/category.vue'
+import Territory from '../territory/territory.vue'
 
 export default {
+  components: { Category, Territory },
   filters: {
     statusFilter(role) {
       const roleMap = {
@@ -116,7 +180,9 @@ export default {
       listQuery: {
         page: 1,
         page_size: 10,
-        title: null
+        title: null,
+        category_id: null,
+        territory_id: null
       },
       answer: {
         id: undefined,
@@ -133,11 +199,32 @@ export default {
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ]
-      }
+      },
+      selectOption: '',
+      dialogDetailVisible: false,
+      questionDetail: {
+        member_id: '',
+        leader_id: '',
+        status: '',
+        title: '',
+        content: '',
+        answer: '',
+        ask_member_name: '',
+        category: '',
+        territory: '',
+        likes: '',
+        leader_name: '',
+        create_time: '',
+        image: ''
+      },
+      categoryOptions: [],
+      territoryOptions: []
     }
   },
   created() {
     this.getList()
+    this.getCategoryJson()
+    this.getTerritoryJson()
   },
   methods: {
     getList() {
@@ -146,6 +233,16 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
+      })
+    },
+    getCategoryJson() {
+      getCategory().then(response => {
+        this.categoryOptions = response.data
+      })
+    },
+    getTerritoryJson() {
+      getTerritory().then(response => {
+        this.territoryOptions = response.data
       })
     },
     resetAnswer() {
@@ -187,7 +284,7 @@ export default {
       })
     },
     deleteData(row) {
-      const  deleteData = {id: row.id}
+      const deleteData = { id: row.id}
       deleteQuestion(deleteData).then(() => {
         this.getList()
         this.$notify({
@@ -199,7 +296,7 @@ export default {
       })
     },
     auditQ(row, status) {
-      const auditData = {id: row.id,status: status}
+      const auditData = { id: row.id, status: status }
       audit(auditData).then(() => {
         this.getList()
         this.$notify({
@@ -221,6 +318,21 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getList()
+    },
+    categorySelectChange(data) {
+      console.log(data)
+      this.listQuery.category_id = data
+    },
+    territorySelectChange(data) {
+      console.log(data)
+      this.listQuery.territory_id = data
+    },
+    handelQuestionDetail(row) {
+      const param = { id: row.id }
+      getQusetionDetail(param).then(res => {
+        this.questionDetail = res.data
+        this.dialogDetailVisible = true
+      })
     }
   }
 }

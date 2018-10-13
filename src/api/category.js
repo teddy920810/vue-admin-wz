@@ -31,3 +31,10 @@ export function deleteCategory(data) {
     data
   })
 }
+
+export function getCategory() {
+  return request({
+    url: '/Category/all',
+    method: 'get'
+  })
+}

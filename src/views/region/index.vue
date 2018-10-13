@@ -35,7 +35,7 @@ export default {
           label: '杭州'
         }]
       }]
-    };
+    }
   },
   created() {
     this.getRegionJson()
