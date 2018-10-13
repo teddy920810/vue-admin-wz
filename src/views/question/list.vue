@@ -8,7 +8,6 @@
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
-      border
       fit
       highlight-current-row>
       <el-table-column label="标题">
@@ -48,17 +47,24 @@
       </el-table-column>
       <el-table-column align="center" label="状态">
         <template slot-scope="scope">
-          <div v-if="scope.row.status==0">
-            <el-button type="success" size="small" @click="auditQ(scope.row, 1)" round>审核通过</el-button>
-            <el-button type="danger" size="small" @click="auditQ(scope.row, 2)" round>审核拒绝</el-button>
-          </div>
-          <span v-else>{{ scope.row.status | statusFilter }}</span>
+          <el-tag>{{ scope.row.status | statusFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column label="操作" width="280">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleUpdate(scope.row)">回答</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.row)" circle></el-button>
+          <span style="width: 60px">
+            <el-button v-if="scope.row.status==0 || scope.row.status==2" type="success" size="small" round @click="auditQ(scope.row, 1)">通过</el-button>
+          </span>
+          <span style="width: 60px">
+            <el-button v-if="scope.row.status==0 || scope.row.status==1" type="danger" size="small" round @click="auditQ(scope.row, 2)">拒绝</el-button>
+          </span>
+          <span style="width: 80px">
+            <el-button v-if="scope.row.answer==''" type="primary" size="small" @click="handleUpdate(scope.row)">回答</el-button>
+            <el-button v-else type="primary" size="small" @click="handleUpdate(scope.row)">修改回答</el-button>
+          </span>
+          <span style="width: 30px">
+            <el-button type="danger" size="small" icon="el-icon-delete" circle @click="deleteData(scope.row)"/>
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -219,3 +225,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+  span {
+    display:-moz-inline-box;
+    display:inline-block;
+  }
+</style>

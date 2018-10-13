@@ -22,7 +22,7 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-  { path: '/login', component: () => import('@/views/login/index'), hidden: true },
+  { path: '/login', component: () => import('@/views/login/load'), hidden: true },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
 
   {
@@ -36,6 +36,17 @@ export const constantRouterMap = [
       component: () => import('@/views/dashboard/index')
     }]
   },
+
+  { path: '*', redirect: '/', hidden: true }
+]
+
+export default new Router({
+  // mode: 'history', //后端支持可开
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRouterMap
+})
+
+export const asyncRouterMap = [
 
   {
     path: '/question',
@@ -57,21 +68,10 @@ export const constantRouterMap = [
         path: 'index',
         name: '领导管理',
         component: () => import('@/views/leader/list'),
-        meta: { title: '领导管理', icon: 'form' }
+        meta: { title: '领导管理', icon: 'form', roles: ['ADMIN'] }
       }
-    ]
-  },
-  {
-    path: '/region',
-    component: Layout,
-    children: [
-      {
-        path: 'list',
-        name: '地区',
-        component: () => import('@/views/region/list'),
-        meta: { title: '地区', icon: 'form' }
-      }
-    ]
+    ],
+    meta: { roles: ['ADMIN'] }
   },
   {
     path: '/category',
@@ -81,9 +81,10 @@ export const constantRouterMap = [
         path: 'list',
         name: '类别',
         component: () => import('@/views/category/list'),
-        meta: { title: '类别', icon: 'form' }
+        meta: { title: '类别', icon: 'form', roles: ['ADMIN'] }
       }
-    ]
+    ],
+    meta: { roles: ['ADMIN'] }
   },
   {
     path: '/territory',
@@ -93,16 +94,9 @@ export const constantRouterMap = [
         path: 'list',
         name: '领域',
         component: () => import('@/views/territory/list'),
-        meta: { title: '领域', icon: 'form' }
+        meta: { title: '领域', icon: 'form', roles: ['ADMIN'] }
       }
-    ]
-  },
-
-  { path: '*', redirect: '/', hidden: true }
+    ],
+    meta: { roles: ['ADMIN'] }
+  }
 ]
-
-export default new Router({
-  // mode: 'history', //后端支持可开
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})

@@ -1,38 +1,40 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input placeholder="搜索名称" class="filter-item" v-model="listQuery.name" style="width: 200px;" @keyup.enter.native="handleFilter"/>
-      <region @selectRegion="searchRegion" :selectOption="selectOption" class="filter-item"></region>
+      <el-input v-model="listQuery.name" placeholder="搜索名称" class="filter-item" style="width: 200px;" @keyup.enter.native="handleFilter"/>
+      <!--<region :select-option="selectOption" class="filter-item" @selectRegion="searchRegion"/>-->
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
     </div>
     <el-table
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
-      border
       fit
       highlight-current-row>
-      <el-table-column label="领导姓名" width="195">
+      <el-table-column label="用户名">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.user_name }}
+        </template>
+      </el-table-column>
+      <el-table-column label="领导名称">
+        <template slot-scope="scope">
+          {{ scope.row.leader_name }}
         </template>
       </el-table-column>
       <el-table-column label="所属地域" width="310" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.province }}</span>
-          <span>{{ scope.row.city }}</span>
+          <span>{{ scope.row.leader_province }}</span>
+          <span>{{ scope.row.leader_city }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" width="310" align="center">
+      <el-table-column label="领导描述" width="310" align="center">
         <template slot-scope="scope">
-          {{ scope.row.desc }}
+          {{ scope.row.leader_desc }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.row)" circle></el-button>
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleBindLeader(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -49,7 +51,7 @@
     </div>
     <!-- 新增/修改领导 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item label="名称" prop="name">
           <el-input v-model="leader.name"/>
         </el-form-item>
@@ -57,20 +59,19 @@
           <el-input v-model="leader.desc"/>
         </el-form-item>
         <el-form-item label="所属地区" prop="city_id">
-          <region :selectOption="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
+          <region :select-option="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">提交</el-button>
-        <el-button v-else type="primary" @click="updateData">保存</el-button>
+        <el-button type="primary" @click="saveData">保存</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList, addLeader, editLeader, deleteLeader } from '@/api/leader'
+import { getSysUserList, bindLeader } from '@/api/leader'
 import Region from '../region/index.vue'
 
 export default {
@@ -88,7 +89,7 @@ export default {
         city_id: null
       },
       leader: {
-        id: undefined,
+        user_id: undefined,
         name: '',
         desc: '',
         province_id: '',
@@ -122,34 +123,24 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getList(this.listQuery).then(response => {
+      getSysUserList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
       })
     },
-    resetLeader() {
-      this.leader = {
-        id: undefined,
-        name: '',
-        desc: '',
-        province_id: '',
-        city_id: ''
-      }
-    },
-    handleCreate() {
-      this.resetLeader()
+    handleBindLeader(row) {
+      this.leader = Object.assign({}, row)
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log(this.leader)
-          addLeader(this.leader).then(() => {
+          bindLeader(this.leader).then(() => {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
@@ -160,42 +151,6 @@ export default {
             })
           })
         }
-      })
-    },
-    handleUpdate(row) {
-      this.leader = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          editLeader(this.leader).then(() => {
-            this.getList()
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    deleteData(row) {
-      const  deleteData = {id: row.id}
-      deleteLeader(deleteData).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
       })
     },
     handleFilter() {

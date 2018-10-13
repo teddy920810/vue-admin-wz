@@ -9,7 +9,6 @@
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
-      border
       fit
       highlight-current-row>
       <el-table-column label="ID" width="195">
