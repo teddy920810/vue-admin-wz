@@ -35,6 +35,11 @@ const user = {
         resolve()
       })
     },
+    // 从localStorage获取token
+    GetToken({ commit }) {
+      const TOKEN_KEY = 'token'
+      return window.localStorage.getItem(TOKEN_KEY)
+    },
     GetUserRole({ commit, state }) {
       return new Promise((resolve, reject) => {
         isAdmin().then(response => {

@@ -284,7 +284,7 @@ export default {
       })
     },
     deleteData(row) {
-      const deleteData = { id: row.id}
+      const deleteData = { id: row.id }
       deleteQuestion(deleteData).then(() => {
         this.getList()
         this.$notify({

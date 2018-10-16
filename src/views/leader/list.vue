@@ -111,7 +111,7 @@ export default {
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
         city_id: [
-          { required: true, message: '请选择', trigger: 'blur' },
+          { required: true, message: '请选择', trigger: 'blur' }
         ]
       },
       selectOption: []

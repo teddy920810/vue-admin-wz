@@ -14,7 +14,7 @@ export default {
   props: {
     selectOption: {
       type: Array,
-      default: [5, 64]
+      default: function() { return [5, 64] }
     }
   },
   data() {
@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     handleItemChange(val) {
-      //console.log('active item:', val);
+      // console.log('active item:', val);
     },
     handleValueChang(val) {
       console.log('the val:', val)
