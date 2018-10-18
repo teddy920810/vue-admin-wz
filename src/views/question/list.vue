@@ -26,9 +26,9 @@
       <el-table-column label="图片">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <img :src="GLOBAL.servicePath + questionDetail.image" width="180" height="180">
+            <img :src="GLOBAL.servicePath + scope.row.image" width="180" height="180">
             <div slot="reference" class="name-wrapper">
-              <img :src="GLOBAL.servicePath + questionDetail.image" width="80" height="80">
+              <img :src="GLOBAL.servicePath + scope.row.image" width="80" height="80">
             </div>
           </el-popover>
         </template>
