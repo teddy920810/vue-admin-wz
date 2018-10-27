@@ -41,7 +41,6 @@ export default {
       })
     },
     handleValueChang(val) {
-      console.log(val)
       this.$emit('selectChange', val)
     }
   }

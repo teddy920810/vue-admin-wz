@@ -27,7 +27,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { bindLeader } from '@/api/leader'
+import { initLeader } from '@/api/leader'
 import Region from '../region/index.vue'
 
 export default {
@@ -71,7 +71,7 @@ export default {
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          bindLeader(this.leader).then(() => {
+          initLeader(this.leader).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',

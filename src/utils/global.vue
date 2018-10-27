@@ -1,9 +1,11 @@
 <script>
-const uploadFileUrl = 'http://47.74.250.86/zx02frmrbwz_pkdza/Upload/imgUpload'
-const servicePath = 'http://47.74.250.86'
+const uploadFileUrl = process.env.BASE_API + '/Upload/imgUpload'
+const servicePath = process.env.BASE_API
+const fileBaseUrl = process.env.IMG_API
 
 export default {
   uploadFileUrl,
-  servicePath
+  servicePath,
+  fileBaseUrl
 }
 </script>

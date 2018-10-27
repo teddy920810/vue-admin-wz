@@ -117,7 +117,6 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log(this.category)
           addCategory(this.category).then(() => {
             this.getList()
             this.dialogFormVisible = false

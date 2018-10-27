@@ -117,7 +117,6 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log(this.territory)
           addTerritory(this.territory).then(() => {
             this.getList()
             this.dialogFormVisible = false

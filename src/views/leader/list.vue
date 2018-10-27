@@ -166,7 +166,6 @@ export default {
       this.getList()
     },
     selectRegion(data) {
-      console.log(data)
       this.leader.province_id = data[0]
       this.leader.city_id = data[1]
     },

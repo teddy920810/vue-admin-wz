@@ -8,6 +8,14 @@ export function getSysUserList(params) {
   })
 }
 
+export function initLeader(data) {
+  return request({
+    url: '/Leader/init',
+    method: 'post',
+    data
+  })
+}
+
 export function bindLeader(data) {
   return request({
     url: '/Leader/edit',

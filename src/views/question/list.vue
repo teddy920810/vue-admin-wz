@@ -26,9 +26,9 @@
       <el-table-column label="图片">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <img :src="GLOBAL.servicePath + scope.row.image" width="180" height="180">
+            <img :src="GLOBAL.fileBaseUrl + scope.row.image" width="180" height="180">
             <div slot="reference" class="name-wrapper">
-              <img :src="GLOBAL.servicePath + scope.row.image" width="80" height="80">
+              <img :src="GLOBAL.fileBaseUrl + scope.row.image" width="80" height="80">
             </div>
           </el-popover>
         </template>
@@ -117,7 +117,7 @@
       </div>
     </el-dialog>
     <el-dialog :visible.sync="dialogDetailVisible" title="问答详情">
-      <el-form label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form label-position="left" label-width="100px" style="width: 80%; margin-left:50px;">
         <el-form-item label="标题:">
           {{ questionDetail.title }}
         </el-form-item>
@@ -137,7 +137,7 @@
           <el-tag>{{ questionDetail.status | statusFilter }}</el-tag>
         </el-form-item>
         <el-form-item label="图片:">
-          <img :src="GLOBAL.servicePath + questionDetail.image" width="200" height="200">
+          <img :src="GLOBAL.fileBaseUrl + questionDetail.image" width="200" height="200">
         </el-form-item>
         <el-form-item label="问题详情:">
           {{ questionDetail.content }}
@@ -320,7 +320,6 @@ export default {
       this.getList()
     },
     categorySelectChange(data) {
-      console.log(data)
       this.listQuery.category_id = data
     },
     territorySelectChange(data) {
