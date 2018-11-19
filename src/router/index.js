@@ -36,6 +36,18 @@ export const constantRouterMap = [
       component: () => import('@/views/dashboard/index')
     }]
   },
+  {
+    path: '/role',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: '角色',
+        component: () => import('@/views/role/permission'),
+        meta: { title: '角色', icon: 'form' }
+      }
+    ]
+  },
 
   { path: '*', redirect: '/', hidden: true }
 ]
