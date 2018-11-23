@@ -34,7 +34,7 @@ export function deleteRole(data) {
 
 export function getPermission() {
   return request({
-    url: '/Role/permission',
+    url: '/Permission/list',
     method: 'get'
   })
 }

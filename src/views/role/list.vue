@@ -15,9 +15,14 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="角色描述">
+      <el-table-column label="创建时间">
         <template slot-scope="scope">
-          {{ scope.row.desc }}
+          {{ scope.row.create_time | timeFilter }}
+        </template>
+      </el-table-column>
+      <el-table-column label="修改时间">
+        <template slot-scope="scope">
+          {{ scope.row.update_time | timeFilter }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
