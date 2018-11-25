@@ -53,11 +53,11 @@
     <!-- 新增/修改领导 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="leader.name"/>
+        <el-form-item label="名称" prop="leader_name">
+          <el-input v-model="leader.leader_name"/>
         </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="leader.desc"/>
+        <el-form-item label="描述" prop="leader_desc">
+          <el-input v-model="leader.leader_desc"/>
         </el-form-item>
         <el-form-item label="所属地区" prop="city_id">
           <region :select-option="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
@@ -108,14 +108,14 @@ export default {
       },
       leader: {
         user_id: undefined,
-        name: '',
-        desc: '',
+        leader_name: '',
+        leader_desc: '',
         province_id: '',
         city_id: ''
       },
       role_leader: {
         user_id: undefined,
-        name: '',
+        leader_name: '',
         role_ids: []
       },
       dialogFormVisible: false,
@@ -155,7 +155,7 @@ export default {
     },
     handleBindLeader(row) {
       this.leader = Object.assign({}, row)
-      this.dialogStatus = 'create'
+      this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -164,14 +164,14 @@ export default {
     resetRoleLeader() {
       this.role_leader = {
         user_id: undefined,
-        name: '',
+        leader_name: '',
         role_ids: []
       }
     },
     handleRoleLeader(row) {
       this.resetRoleLeader()
       this.role_leader.user_id = row.user_id
-      this.role_leader.name = row.name
+      this.role_leader.leader_name = row.leader_name
       getUserRoleInfoByUserId(this.role_leader.user_id).then((res) => {
         res.data.forEach((role) => {
           this.role_leader.role_ids.push(role.id)
@@ -198,7 +198,7 @@ export default {
     saveRoleData() {
       this.$refs['dataRoleForm'].validate((valid) => {
         if (valid) {
-          delete this.role_leader.name
+          delete this.role_leader.leader_name
           editUserRole(this.role_leader).then(() => {
             this.getList()
             this.dialogRoleFormVisible = false
@@ -231,6 +231,9 @@ export default {
     searchRegion(data) {
       this.listQuery.province_id = data[0]
       this.listQuery.city_id = data[1]
+    },
+    changeOpinion(val) {
+      this.role_leader.role_ids = val
     }
   }
 }
