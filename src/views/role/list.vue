@@ -3,6 +3,7 @@
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="搜索名称" class="filter-item" style="width: 200px;" @keyup.enter.native="handleFilter"/>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+      <el-button v-if="hasButton('ROLE_ADD')" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -10,6 +11,11 @@
       element-loading-text="Loading"
       fit
       highlight-current-row>
+      <el-table-column label="ID">
+        <template slot-scope="scope">
+          {{ scope.row.id }}
+        </template>
+      </el-table-column>
       <el-table-column label="角色名">
         <template slot-scope="scope">
           {{ scope.row.name }}
@@ -20,15 +26,11 @@
           {{ scope.row.create_time | timeFilter }}
         </template>
       </el-table-column>
-      <el-table-column label="修改时间">
+      <el-table-column align="center" label="操作" width="240">
         <template slot-scope="scope">
-          {{ scope.row.update_time | timeFilter }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作">
-        <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" circle @click="deleteData(scope.row)"/>
+          <el-button v-if="hasButton('ROLE_EDIT')" type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
+          <el-button v-if="hasButton('ROLE_DEL')" type="danger" size="mini" @click="deleteData(scope.row)">删除</el-button>
+          <el-button v-if="hasButton('ROLE_EDIT')" type="info" size="mini" @click="handlerPermission(scope.row)">模块配置</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -43,30 +45,42 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"/>
     </div>
-    <!-- 新增/修改领导 -->
+    <!-- 新增/修改角色 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="role" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="leader.name"/>
-        </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="leader.desc"/>
-        </el-form-item>
-        <el-form-item label="权限" prop="city_id">
-          <permission :select-option="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="role.name"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">提交</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="saveData">提交</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
       </div>
     </el-dialog>
+    <!-- 给角色赋权 -->
+    <el-dialog :visible.sync="dialogPermissionVisible" title="角色赋权" >
+      <el-form ref="dataFormPermission" :model="role_permission" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="角色名称">
+          <el-input v-model="role_permission.role_name" :disabled="true"/>
+        </el-form-item>
+        <el-form-item label="角色权限">
+          <permission :default-check-option="role_permission.permission_ids" @checkPermission="hasCheckOpinion" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogPermissionVisible = false">取消</el-button>
+        <el-button type="primary" @click="savePermission">保存</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { getRoleList, addRole, editRole, deleteRole } from '@/api/role'
+import { getPermissionByRole, editRolePermission } from '@/api/permission'
+
 import Permission from '../role/permission.vue'
 
 export default {
@@ -83,11 +97,15 @@ export default {
       },
       role: {
         id: undefined,
-        name: '',
-        desc: '',
-        permissions: []
+        name: ''
+      },
+      role_permission: {
+        role_id: undefined,
+        role_name: '',
+        permission_ids: []
       },
       dialogFormVisible: false,
+      dialogPermissionVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改',
@@ -116,9 +134,14 @@ export default {
     resetRole() {
       this.role = {
         id: undefined,
-        name: '',
-        desc: '',
-        permissions: []
+        name: ''
+      }
+    },
+    resetRolePermission() {
+      this.role_permission = {
+        role_id: undefined,
+        role_name: '',
+        permission_ids: []
       }
     },
     handleCreate() {
@@ -136,6 +159,15 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+    },
+    handlerPermission(row) {
+      this.resetRolePermission()
+      this.role_permission.role_id = row.id
+      this.role_permission.role_name = row.name
+      getPermissionByRole(this.role_permission.role_id).then((res) => {
+        this.role_permission.permission_ids = res.data
+      })
+      this.dialogPermissionVisible = true
     },
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -181,6 +213,24 @@ export default {
         })
       })
     },
+    savePermission() {
+      this.$refs['dataFormPermission'].validate((valid) => {
+        if (valid) {
+          delete this.role_permission.role_name
+          console.log(this.role_permission)
+          editRolePermission(this.role_permission).then(() => {
+            this.getList()
+            this.dialogPermissionVisible = false
+            this.$notify({
+              title: '成功',
+              message: '角色权限配置成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
@@ -192,6 +242,11 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getList()
+    },
+    hasCheckOpinion(val) {
+      console.log('父级：' + val.toString().split(','))
+      console.log(val)
+      this.role_permission.permission_ids = val
     }
   }
 }

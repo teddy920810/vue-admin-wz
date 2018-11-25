@@ -36,19 +36,6 @@ export const constantRouterMap = [
       component: () => import('@/views/dashboard/index')
     }]
   },
-  {
-    path: '/role',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: '角色',
-        component: () => import('@/views/role/list'),
-        meta: { title: '角色', icon: 'form' }
-      }
-    ]
-  },
-
   { path: '*', redirect: '/', hidden: true }
 ]
 
@@ -59,16 +46,29 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-
   {
-    path: '/question',
+    path: '/role',
     component: Layout,
+    meta: { roles: ['ROLE_MANAGE'] },
     children: [
       {
         path: 'index',
-        name: '问答',
+        name: '角色管理',
+        component: () => import('@/views/role/list'),
+        meta: { title: '角色管理', icon: 'form', roles: ['ROLE_MANAGE'] }
+      }
+    ]
+  },
+  {
+    path: '/question',
+    component: Layout,
+    meta: { roles: ['QUESTION_MANAGE'] },
+    children: [
+      {
+        path: 'index',
+        name: '问答管理',
         component: () => import('@/views/question/list'),
-        meta: { title: '问答', icon: 'form' }
+        meta: { title: '问答管理', icon: 'form', roles: ['QUESTION_MANAGE'] }
       }
     ]
   },
@@ -80,10 +80,10 @@ export const asyncRouterMap = [
         path: 'index',
         name: '领导管理',
         component: () => import('@/views/leader/list'),
-        meta: { title: '领导管理', icon: 'form', roles: ['ADMIN'] }
+        meta: { title: '领导管理', icon: 'form', roles: ['LEADER_MANAGE'] }
       }
     ],
-    meta: { roles: ['ADMIN'] }
+    meta: { roles: ['LEADER_MANAGE'] }
   },
   {
     path: '/category',
@@ -91,12 +91,12 @@ export const asyncRouterMap = [
     children: [
       {
         path: 'list',
-        name: '类别',
+        name: '类别管理',
         component: () => import('@/views/category/list'),
-        meta: { title: '类别', icon: 'form', roles: ['ADMIN'] }
+        meta: { title: '类别管理', icon: 'form', roles: ['CATEGORY_MANAGE'] }
       }
     ],
-    meta: { roles: ['ADMIN'] }
+    meta: { roles: ['CATEGORY_MANAGE'] }
   },
   {
     path: '/territory',
@@ -106,9 +106,9 @@ export const asyncRouterMap = [
         path: 'list',
         name: '领域',
         component: () => import('@/views/territory/list'),
-        meta: { title: '领域', icon: 'form', roles: ['ADMIN'] }
+        meta: { title: '领域', icon: 'form', roles: ['TERRITORY_MANAGE'] }
       }
     ],
-    meta: { roles: ['ADMIN'] }
+    meta: { roles: ['TERRITORY_MANAGE'] }
   }
 ]

@@ -32,9 +32,24 @@ export function deleteRole(data) {
   })
 }
 
-export function getPermission() {
+export function getRoleAll() {
   return request({
-    url: '/Permission/list',
+    url: '/Role/all',
+    method: 'get'
+  })
+}
+
+export function editUserRole(data) {
+  return request({
+    url: '/Userrole/edit',
+    method: 'post',
+    data
+  })
+}
+
+export function getUserRoleInfoByUserId(user_id) {
+  return request({
+    url: '/User/roles?user_id=' + user_id,
     method: 'get'
   })
 }

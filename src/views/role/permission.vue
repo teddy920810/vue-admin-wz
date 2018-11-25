@@ -2,7 +2,6 @@
   <el-tree
     ref="per"
     :data="permissionData"
-    :default-expanded-keys="defaultCheckKeys"
     :default-checked-keys="defaultCheckKeys"
     :props="defaultProps"
     show-checkbox
@@ -11,11 +10,13 @@
 </template>
 
 <script>
+import { getPermission } from '@/api/permission'
+
 export default {
   props: {
     defaultCheckOption: {
       type: Array,
-      default: () => { return [5] }
+      default: () => { return [] }
     }
   },
   data() {
@@ -23,7 +24,8 @@ export default {
       permissionData: [],
       defaultProps: {
         children: 'children',
-        label: 'name'
+        label: 'name',
+        id: 'id'
       },
       defaultCheckKeys: this.defaultCheckOption
     }
@@ -31,49 +33,19 @@ export default {
   watch: {
     defaultCheckOption(val) {
       this.defaultCheckKeys = val
+      this.$refs.per.setCheckedKeys(this.defaultCheckKeys)
     }
   },
   created() {
     this.getPermissionJson()
-    console.log(this.permissionData)
   },
   methods: {
     getPermissionJson() {
-     /* getPermission().then(response => {
-        this.options = response.data
-      })*/
-      this.permissionData = [{
-         id: 1,
-         name: '一级 1',
-         children: [{
-           id: 4,
-           name: '二级 1-1'
-         }]
-        }, {
-         id: 2,
-        name: '一级 2',
-         children: [{
-           id: 5,
-           name: '二级 2-1'
-         }, {
-           id: 6,
-           name: '二级 2-2'
-         }]
-        }, {
-         id: 3,
-        name: '一级 3',
-         children: [{
-           id: 7,
-           name: '二级 3-1'
-         }, {
-           id: 8,
-           name: '二级 3-2'
-         }]
-        }]
+      getPermission().then(response => {
+        this.permissionData = response.data
+      })
     },
     checkVal(data) {
-      console.log(data)
-      console.log(this.$refs.per.getCheckedKeys())
       this.$emit('checkPermission', this.$refs.per.getCheckedKeys())
     }
   }

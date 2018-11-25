@@ -34,7 +34,8 @@
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleBindLeader(scope.row)">编辑</el-button>
+          <el-button v-if="hasButton('LEADER_EDIT')" type="primary" size="small" icon="el-icon-edit" @click="handleBindLeader(scope.row)">编辑</el-button>
+          <el-button v-if="hasButton('USER_ROLE_EDIT') && scope.row.name" type="info" size="mini" @click="handleRoleLeader(scope.row)">角色配置</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -67,15 +68,32 @@
         <el-button type="primary" @click="saveData">保存</el-button>
       </div>
     </el-dialog>
+    <!-- 角色配置 -->
+    <el-dialog :visible.sync="dialogRoleFormVisible" title="角色配置">
+      <el-form ref="dataRoleForm" :model="role_leader" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="名称">
+          <el-input v-model="role_leader.name" :disabled="true"/>
+        </el-form-item>
+        <el-form-item label="角色">
+          <role-select :default-value="role_leader.role_ids" @change="changeOpinion"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogRoleFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveRoleData">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getSysUserList, bindLeader } from '@/api/leader'
+import { editUserRole, getUserRoleInfoByUserId } from '@/api/role'
 import Region from '../region/index.vue'
+import RoleSelect from '../role/role-select.vue'
 
 export default {
-  components: { Region },
+  components: { Region, RoleSelect },
   data() {
     return {
       list: null,
@@ -95,7 +113,13 @@ export default {
         province_id: '',
         city_id: ''
       },
+      role_leader: {
+        user_id: undefined,
+        name: '',
+        role_ids: []
+      },
       dialogFormVisible: false,
+      dialogRoleFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改',
@@ -137,6 +161,24 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    resetRoleLeader() {
+      this.role_leader = {
+        user_id: undefined,
+        name: '',
+        role_ids: []
+      }
+    },
+    handleRoleLeader(row) {
+      this.resetRoleLeader()
+      this.role_leader.user_id = row.user_id
+      this.role_leader.name = row.name
+      getUserRoleInfoByUserId(this.role_leader.user_id).then((res) => {
+        res.data.forEach((role) => {
+          this.role_leader.role_ids.push(role.id)
+        })
+        this.dialogRoleFormVisible = true
+      })
+    },
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -146,6 +188,23 @@ export default {
             this.$notify({
               title: '成功',
               message: '创建成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    saveRoleData() {
+      this.$refs['dataRoleForm'].validate((valid) => {
+        if (valid) {
+          delete this.role_leader.name
+          editUserRole(this.role_leader).then(() => {
+            this.getList()
+            this.dialogRoleFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '角色配置成功',
               type: 'success',
               duration: 2000
             })

@@ -68,3 +68,7 @@ export function formatTime(time, option) {
     )
   }
 }
+
+export function hasButton(button) {
+  return this.$store.state.user.roles.indexOf(button) > 0
+}
