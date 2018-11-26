@@ -32,10 +32,10 @@
           {{ scope.row.leader_desc }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column label="操作" width="190">
         <template slot-scope="scope">
-          <el-button v-if="hasButton('LEADER_EDIT')" type="primary" size="small" icon="el-icon-edit" @click="handleBindLeader(scope.row)">编辑</el-button>
-          <el-button v-if="hasButton('USER_ROLE_EDIT') && scope.row.name" type="info" size="mini" @click="handleRoleLeader(scope.row)">角色配置</el-button>
+          <el-button v-if="hasButton('RR_LEADER_EDIT')" type="primary" size="small" icon="el-icon-edit" @click="handleBindLeader(scope.row)">编辑</el-button>
+          <el-button v-if="hasButton('RR_LEADER_ROLE') && scope.row.leader_name" type="info" size="mini" @click="handleRoleLeader(scope.row)">角色配置</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,8 +59,8 @@
         <el-form-item label="描述" prop="leader_desc">
           <el-input v-model="leader.leader_desc"/>
         </el-form-item>
-        <el-form-item label="所属地区" prop="city_id">
-          <region :select-option="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
+        <el-form-item label="所属地区" prop="leader_city_id">
+          <region :select-option="[leader.leader_province_id,leader.leader_city_id]" @selectRegion="selectRegion"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -72,7 +72,7 @@
     <el-dialog :visible.sync="dialogRoleFormVisible" title="角色配置">
       <el-form ref="dataRoleForm" :model="role_leader" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
         <el-form-item label="名称">
-          <el-input v-model="role_leader.name" :disabled="true"/>
+          <el-input v-model="role_leader.leader_name" :disabled="true"/>
         </el-form-item>
         <el-form-item label="角色">
           <role-select :default-value="role_leader.role_ids" @change="changeOpinion"/>
@@ -110,8 +110,8 @@ export default {
         user_id: undefined,
         leader_name: '',
         leader_desc: '',
-        province_id: '',
-        city_id: ''
+        leader_province_id: '',
+        leader_city_id: ''
       },
       role_leader: {
         user_id: undefined,
@@ -126,15 +126,15 @@ export default {
         create: '新增'
       },
       rules: {
-        name: [
+        leader_name: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
-        desc: [
+        leader_desc: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
-        city_id: [
+        leader_city_id: [
           { required: true, message: '请选择', trigger: 'blur' }
         ]
       },
@@ -182,6 +182,10 @@ export default {
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.leader.name = this.leader.leader_name
+          this.leader.desc = this.leader.leader_desc
+          this.leader.city_id = this.leader.leader_city_id
+          this.leader.province_id = this.leader.leader_province_id
           bindLeader(this.leader).then(() => {
             this.getList()
             this.dialogFormVisible = false

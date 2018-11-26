@@ -50,26 +50,26 @@ export const asyncRouterMap = [
   {
     path: '/role',
     component: Layout,
-    meta: { roles: ['ROLE_MANAGE'] },
+    meta: { roles: ['RR_ROLE_MANAGE'] },
     children: [
       {
         path: 'index',
         name: '角色管理',
         component: () => import('@/views/role/list'),
-        meta: { title: '角色管理', icon: 'form', roles: ['ROLE_MANAGE'] }
+        meta: { title: '角色管理', icon: 'form', roles: ['RR_ROLE_MANAGE'] }
       }
     ]
   },
   {
     path: '/question',
     component: Layout,
-    meta: { roles: ['QUESTION_MANAGE'] },
+    meta: { roles: ['RR_QUESTION_MANAGE'] },
     children: [
       {
         path: 'index',
         name: '问答管理',
         component: () => import('@/views/question/list'),
-        meta: { title: '问答管理', icon: 'form', roles: ['QUESTION_MANAGE'] }
+        meta: { title: '问答管理', icon: 'form', roles: ['RR_QUESTION_MANAGE'] }
       }
     ]
   },
@@ -81,10 +81,10 @@ export const asyncRouterMap = [
         path: 'index',
         name: '领导管理',
         component: () => import('@/views/leader/list'),
-        meta: { title: '领导管理', icon: 'form', roles: ['LEADER_MANAGE'] }
+        meta: { title: '领导管理', icon: 'form', roles: ['RR_LEADER_MANAGE'] }
       }
     ],
-    meta: { roles: ['LEADER_MANAGE'] }
+    meta: { roles: ['RR_LEADER_MANAGE'] }
   },
   {
     path: '/category',
@@ -94,10 +94,10 @@ export const asyncRouterMap = [
         path: 'list',
         name: '类别管理',
         component: () => import('@/views/category/list'),
-        meta: { title: '类别管理', icon: 'form', roles: ['CATEGORY_MANAGE'] }
+        meta: { title: '类别管理', icon: 'form', roles: ['RR_CATEGORY_MANAGE'] }
       }
     ],
-    meta: { roles: ['CATEGORY_MANAGE'] }
+    meta: { roles: ['RR_CATEGORY_MANAGE'] }
   },
   {
     path: '/territory',
@@ -105,11 +105,11 @@ export const asyncRouterMap = [
     children: [
       {
         path: 'list',
-        name: '领域',
+        name: '领域管理',
         component: () => import('@/views/territory/list'),
-        meta: { title: '领域', icon: 'form', roles: ['TERRITORY_MANAGE'] }
+        meta: { title: '领域管理', icon: 'form', roles: ['RR_TERRITORY_MANAGE'] }
       }
     ],
-    meta: { roles: ['TERRITORY_MANAGE'] }
+    meta: { roles: ['RR_TERRITORY_MANAGE'] }
   }
 ]
