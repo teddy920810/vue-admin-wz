@@ -229,8 +229,8 @@ export default {
       this.getList()
     },
     selectRegion(data) {
-      this.leader.province_id = data[0]
-      this.leader.city_id = data[1]
+      this.leader.leader_province_id = data[0]
+      this.leader.leader_city_id = data[1]
     },
     searchRegion(data) {
       this.listQuery.province_id = data[0]

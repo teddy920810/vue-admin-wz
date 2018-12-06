@@ -14,7 +14,7 @@ export default {
   props: {
     selectOption: {
       type: Array,
-      default: function() { return [5, 64] }
+      default: function() { return [] }
     }
   },
   data() {
