@@ -69,8 +69,7 @@ export default {
     this.dialogFormVisible = Object.is('', this.name)
     if (this.roles.length === 0) {
       this.$router.push({ path: '/401' })
-    }
-    if (this.addRouters.length > 0) {
+    } else if (this.addRouters.length > 0) {
       this.$router.push({ path: this.addRouters[0].path })
     }
   },
