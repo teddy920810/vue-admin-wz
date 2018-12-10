@@ -50,6 +50,7 @@ export const asyncRouterMap = [
   {
     path: '/role',
     component: Layout,
+    redirect: '/role/index',
     meta: { roles: ['RR_ROLE_MANAGE'] },
     children: [
       {
@@ -63,6 +64,7 @@ export const asyncRouterMap = [
   {
     path: '/question',
     component: Layout,
+    redirect: '/question/index',
     meta: { roles: ['RR_QUESTION_MANAGE'] },
     children: [
       {
@@ -76,6 +78,7 @@ export const asyncRouterMap = [
   {
     path: '/leader',
     component: Layout,
+    redirect: '/leader/index',
     children: [
       {
         path: 'index',
@@ -89,6 +92,7 @@ export const asyncRouterMap = [
   {
     path: '/category',
     component: Layout,
+    redirect: '/category/list',
     children: [
       {
         path: 'list',
@@ -102,6 +106,7 @@ export const asyncRouterMap = [
   {
     path: '/territory',
     component: Layout,
+    redirect: '/territory/list',
     children: [
       {
         path: 'list',
