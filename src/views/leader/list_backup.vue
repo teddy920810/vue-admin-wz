@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="搜索名称" class="filter-item" style="width: 200px;" @keyup.enter.native="handleFilter"/>
+      <!--<region :select-option="selectOption" class="filter-item" @selectRegion="searchRegion"/>-->
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-      <el-button v-if="hasButton('RR_LEADER_ADD')" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -53,9 +53,6 @@
     <!-- 新增/修改领导 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="选择用户">
-          <role-select :default-value="leader.user_id" @change="changeUserOpinion"/>
-        </el-form-item>
         <el-form-item label="名称" prop="leader_name">
           <el-input v-model="leader.leader_name"/>
         </el-form-item>
@@ -94,10 +91,9 @@ import { getSysUserList, bindLeader } from '@/api/leader'
 import { editUserRole, getUserRoleInfoByUserId } from '@/api/role'
 import Region from '../region/index.vue'
 import RoleSelect from '../role/role-select.vue'
-import UserSelect from '../leader/user-select.vue'
 
 export default {
-  components: { Region, RoleSelect, UserSelect },
+  components: { Region, RoleSelect },
   data() {
     return {
       list: null,
@@ -155,23 +151,6 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
-      })
-    },
-    resetLeader() {
-      this.leader = {
-        user_id: undefined,
-        leader_name: '',
-        leader_desc: '',
-        leader_province_id: '',
-        leader_city_id: ''
-      }
-    },
-    handleCreate() {
-      this.resetLeader()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
       })
     },
     handleBindLeader(row) {
@@ -259,9 +238,6 @@ export default {
     },
     changeOpinion(val) {
       this.role_leader.role_ids = val
-    },
-    changeUserOpinion(val) {
-      this.leader.user_id = val
     }
   }
 }

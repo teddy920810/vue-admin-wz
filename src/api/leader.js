@@ -23,3 +23,10 @@ export function bindLeader(data) {
     data
   })
 }
+
+export function getUserAll() {
+  return request({
+    url: '/User/all',
+    method: 'get'
+  })
+}
