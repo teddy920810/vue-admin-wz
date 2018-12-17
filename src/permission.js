@@ -22,11 +22,15 @@ router.beforeEach((to, from, next) => {
       } else {
         if (getToken() === res && store.getters.permission_routers) { // 如果localStorage的token与cookie的token相等
           if (hasPermission(store.getters.roles, to.meta.roles)) {
-            if (to.path === '/leader' || store.getters.name) {
+            if (to.path === '/leader' || to.path === '/leader_warning' || store.getters.name) {
               next()
             } else {
-              store.dispatch('GetLeaderInfo').then(() => { // 领导
-                next()
+              store.dispatch('GetLeaderInfo').then((res) => { // 领导
+                if (res.data) {
+                  next()
+                } else {
+                  next({ path: '/leader_warning', replace: true, query: { noGoBack: true }})
+                }
               })
             }
           } else {

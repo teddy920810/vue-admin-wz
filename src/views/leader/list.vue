@@ -18,24 +18,25 @@
       </el-table-column>
       <el-table-column label="领导名称">
         <template slot-scope="scope">
-          {{ scope.row.leader_name }}
+          {{ scope.row.name }}
         </template>
       </el-table-column>
       <el-table-column label="所属地域" width="310" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.leader_province }}</span>
-          <span>{{ scope.row.leader_city }}</span>
+          <span>{{ scope.row.province }}</span>
+          <span>{{ scope.row.city }}</span>
         </template>
       </el-table-column>
       <el-table-column label="领导描述" width="310" align="center">
         <template slot-scope="scope">
-          {{ scope.row.leader_desc }}
+          {{ scope.row.desc }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="190">
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope">
-          <el-button v-if="hasButton('RR_LEADER_EDIT')" type="primary" size="small" icon="el-icon-edit" @click="handleBindLeader(scope.row)">编辑</el-button>
+          <el-button v-if="hasButton('RR_LEADER_EDIT')" type="primary" size="small" @click="handleEditLeader(scope.row)">编辑</el-button>
           <el-button v-if="hasButton('RR_LEADER_ROLE') && scope.row.leader_name" type="info" size="mini" @click="handleRoleLeader(scope.row)">角色配置</el-button>
+          <el-button v-if="hasButton('RR_LEADER_DEL')" type="danger" size="mini" @click="deleteData(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -53,17 +54,43 @@
     <!-- 新增/修改领导 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="选择用户">
-          <role-select :default-value="leader.user_id" @change="changeUserOpinion"/>
+        <el-form-item label="选择用户" prop="user_name">
+          <el-input v-model="leader.user_name" disabled style="width: 60%"/>
+          <el-popover
+            v-model="userListVisible"
+            placement="right"
+            width="300"
+            trigger="manual">
+            <div class="filter-container">
+              <el-input v-model="userListQuery.user_name" placeholder="账号" class="filter-item" style="width: 200px;" @keyup.enter.native="handleFilterUser"/>
+              <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilterUser"/>
+            </div>
+            <el-table
+              :data="userList"
+              highlight-current-row
+              @row-click="handleUserSelectChange">
+              <el-table-column width="150" property="user_id" label="用户ID"/>
+              <el-table-column width="150" property="user_name" label="用户账户"/>
+            </el-table>
+            <el-pagination
+              :current-page="userListQuery.page"
+              :page-size="listQuery.page_size"
+              :total="userTotal"
+              small
+              layout="prev, pager, next"
+              @size-change="handleSizeChangeUser"
+              @current-change="handleCurrentChangeUser"/>
+            <el-button slot="reference" @click="userListVisible = !userListVisible">选择用户</el-button>
+          </el-popover>
         </el-form-item>
-        <el-form-item label="名称" prop="leader_name">
-          <el-input v-model="leader.leader_name"/>
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="leader.name"/>
         </el-form-item>
-        <el-form-item label="描述" prop="leader_desc">
-          <el-input v-model="leader.leader_desc"/>
+        <el-form-item label="描述" prop="desc">
+          <el-input v-model="leader.desc"/>
         </el-form-item>
-        <el-form-item label="所属地区" prop="leader_city_id">
-          <region :select-option="[leader.leader_province_id,leader.leader_city_id]" @selectRegion="selectRegion"/>
+        <el-form-item label="所属地区" prop="city_id">
+          <region :select-option="[leader.province_id,leader.city_id]" @selectRegion="selectRegion"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -90,14 +117,13 @@
 </template>
 
 <script>
-import { getSysUserList, bindLeader } from '@/api/leader'
+import { getLeaderList, editLeader, addLeader, deleteLeader, getSysUserList } from '@/api/leader'
 import { editUserRole, getUserRoleInfoByUserId } from '@/api/role'
 import Region from '../region/index.vue'
 import RoleSelect from '../role/role-select.vue'
-import UserSelect from '../leader/user-select.vue'
 
 export default {
-  components: { Region, RoleSelect, UserSelect },
+  components: { Region, RoleSelect },
   data() {
     return {
       list: null,
@@ -110,12 +136,20 @@ export default {
         province_id: null,
         city_id: null
       },
+      userList: null,
+      userTotal: 0,
+      userListQuery: {
+        page: 1,
+        page_size: 5,
+        user_name: null
+      },
       leader: {
         user_id: undefined,
-        leader_name: '',
-        leader_desc: '',
-        leader_province_id: '',
-        leader_city_id: ''
+        user_name: '',
+        name: '',
+        desc: '',
+        province_id: '',
+        city_id: ''
       },
       role_leader: {
         user_id: undefined,
@@ -130,19 +164,23 @@ export default {
         create: '新增'
       },
       rules: {
-        leader_name: [
+        user_name: [
+          { required: true, message: '请选择', trigger: 'blur' }
+        ],
+        name: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
-        leader_desc: [
+        desc: [
           { required: true, message: '请输入', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
-        leader_city_id: [
+        city_id: [
           { required: true, message: '请选择', trigger: 'blur' }
         ]
       },
-      selectOption: []
+      selectOption: [],
+      userListVisible: false
     }
   },
   created() {
@@ -151,22 +189,30 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getSysUserList(this.listQuery).then(response => {
+      getLeaderList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
       })
     },
+    getUserList() {
+      getSysUserList(this.userListQuery).then(response => {
+        this.userList = response.data.list
+        this.userTotal = response.data.total
+      })
+    },
     resetLeader() {
       this.leader = {
         user_id: undefined,
-        leader_name: '',
-        leader_desc: '',
-        leader_province_id: '',
-        leader_city_id: ''
+        user_name: '',
+        name: '',
+        desc: '',
+        province_id: '',
+        city_id: ''
       }
     },
     handleCreate() {
+      this.getUserList()
       this.resetLeader()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -174,7 +220,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    handleBindLeader(row) {
+    handleEditLeader(row) {
+      this.getUserList()
       this.leader = Object.assign({}, row)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -203,20 +250,29 @@ export default {
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.leader.name = this.leader.leader_name
-          this.leader.desc = this.leader.leader_desc
-          this.leader.city_id = this.leader.leader_city_id
-          this.leader.province_id = this.leader.leader_province_id
-          bindLeader(this.leader).then(() => {
-            this.getList()
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
+          if (this.leader.id) {
+            editLeader(this.leader).then(() => {
+              this.getList()
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
             })
-          })
+          } else {
+            addLeader(this.leader).then(() => {
+              this.getList()
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          }
         }
       })
     },
@@ -249,9 +305,21 @@ export default {
       this.listQuery.page = val
       this.getList()
     },
+    handleFilterUser() {
+      this.userListQuery.page = 1
+      this.getUserList()
+    },
+    handleSizeChangeUser(val) {
+      this.userListQuery.page_size = val
+      this.getUserList()
+    },
+    handleCurrentChangeUser(val) {
+      this.userListQuery.page = val
+      this.getUserList()
+    },
     selectRegion(data) {
-      this.leader.leader_province_id = data[0]
-      this.leader.leader_city_id = data[1]
+      this.leader.province_id = data[0]
+      this.leader.city_id = data[1]
     },
     searchRegion(data) {
       this.listQuery.province_id = data[0]
@@ -260,8 +328,31 @@ export default {
     changeOpinion(val) {
       this.role_leader.role_ids = val
     },
-    changeUserOpinion(val) {
-      this.leader.user_id = val
+    deleteData(row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const deleteData = { id: row.id }
+        deleteLeader(deleteData).then(() => {
+          this.getList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handleUserSelectChange(val) {
+      this.leader.user_id = val.user_id
+      this.leader.user_name = val.user_name
+      this.userListVisible = false
     }
   }
 }
