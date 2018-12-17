@@ -85,6 +85,7 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.$router.push({ path: this.addRouters[0].path })
           })
         }
       })
