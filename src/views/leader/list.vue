@@ -80,7 +80,7 @@
               layout="prev, pager, next"
               @size-change="handleSizeChangeUser"
               @current-change="handleCurrentChangeUser"/>
-            <el-button slot="reference" @click="userListVisible = !userListVisible">选择用户</el-button>
+            <el-button slot="reference" @click="userListVisible = true">选择用户</el-button>
           </el-popover>
         </el-form-item>
         <el-form-item label="名称" prop="name">
@@ -94,7 +94,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button @click="dialogFormVisible = false; userListVisible = false">取消</el-button>
         <el-button type="primary" @click="saveData">保存</el-button>
       </div>
     </el-dialog>
@@ -254,6 +254,7 @@ export default {
             editLeader(this.leader).then(() => {
               this.getList()
               this.dialogFormVisible = false
+              this.userListVisible = false
               this.$notify({
                 title: '成功',
                 message: '创建成功',
@@ -265,6 +266,7 @@ export default {
             addLeader(this.leader).then(() => {
               this.getList()
               this.dialogFormVisible = false
+              this.userListVisible = false
               this.$notify({
                 title: '成功',
                 message: '创建成功',
