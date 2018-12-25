@@ -52,7 +52,7 @@
         @current-change="handleCurrentChange"/>
     </div>
     <!-- 新增/修改领导 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
       <el-form ref="dataForm" :rules="rules" :model="leader" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item label="选择用户" prop="user_name">
           <el-input v-model="leader.user_name" disabled style="width: 60%"/>
@@ -74,7 +74,7 @@
             </el-table>
             <el-pagination
               :current-page="userListQuery.page"
-              :page-size="listQuery.page_size"
+              :page-size="userListQuery.page_size"
               :total="userTotal"
               small
               layout="prev, pager, next"
