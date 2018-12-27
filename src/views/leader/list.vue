@@ -35,7 +35,7 @@
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button v-if="hasButton('RR_LEADER_EDIT')" type="primary" size="small" @click="handleEditLeader(scope.row)">编辑</el-button>
-          <el-button v-if="hasButton('RR_LEADER_ROLE') && scope.row.leader_name" type="info" size="mini" @click="handleRoleLeader(scope.row)">角色配置</el-button>
+          <el-button v-if="hasButton('RR_LEADER_ROLE') && scope.row.name" type="info" size="mini" @click="handleRoleLeader(scope.row)">角色配置</el-button>
           <el-button v-if="hasButton('RR_LEADER_DEL')" type="danger" size="mini" @click="deleteData(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -102,7 +102,7 @@
     <el-dialog :visible.sync="dialogRoleFormVisible" title="角色配置">
       <el-form ref="dataRoleForm" :model="role_leader" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
         <el-form-item label="名称">
-          <el-input v-model="role_leader.leader_name" :disabled="true"/>
+          <el-input v-model="role_leader.name" :disabled="true"/>
         </el-form-item>
         <el-form-item label="角色">
           <role-select :default-value="role_leader.role_ids" @change="changeOpinion"/>
@@ -153,7 +153,7 @@ export default {
       },
       role_leader: {
         user_id: undefined,
-        leader_name: '',
+        name: '',
         role_ids: []
       },
       dialogFormVisible: false,
@@ -232,14 +232,14 @@ export default {
     resetRoleLeader() {
       this.role_leader = {
         user_id: undefined,
-        leader_name: '',
+        name: '',
         role_ids: []
       }
     },
     handleRoleLeader(row) {
       this.resetRoleLeader()
       this.role_leader.user_id = row.user_id
-      this.role_leader.leader_name = row.leader_name
+      this.role_leader.name = row.name
       getUserRoleInfoByUserId(this.role_leader.user_id).then((res) => {
         res.data.forEach((role) => {
           this.role_leader.role_ids.push(role.id)
@@ -281,7 +281,7 @@ export default {
     saveRoleData() {
       this.$refs['dataRoleForm'].validate((valid) => {
         if (valid) {
-          delete this.role_leader.leader_name
+          delete this.role_leader.name
           editUserRole(this.role_leader).then(() => {
             this.getList()
             this.dialogRoleFormVisible = false
