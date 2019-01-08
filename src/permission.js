@@ -47,7 +47,18 @@ router.beforeEach((to, from, next) => {
                 const roles = res // ['ADMIN','OFFICE']
                 store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles生成可访问的路由表
                   router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
-                  next({ ...to, replace: true })
+                  // next({ ...to, replace: true })
+                  if (hasPermission(store.getters.roles, to.meta.roles)) {
+                    if (to.path === '/leader' || store.getters.name) {
+                      next()
+                    } else {
+                      store.dispatch('GetLeaderInfo').then(() => { // 政务号
+                        next({ ...to, replace: true })
+                      })
+                    }
+                  } else {
+                    next({ path: '/401', replace: true, query: { noGoBack: true }})
+                  }
                 })
               }).catch((err) => {
                 store.dispatch('FedLogOut').then(() => {
