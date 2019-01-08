@@ -80,7 +80,7 @@
               layout="prev, pager, next"
               @size-change="handleSizeChangeUser"
               @current-change="handleCurrentChangeUser"/>
-            <el-button slot="reference" @click="userListVisible = true">选择用户</el-button>
+            <el-button v-show="dialogFormCreate" slot="reference" @click="userListVisible = true">选择用户</el-button>
           </el-popover>
         </el-form-item>
         <el-form-item label="名称" prop="name">
@@ -157,6 +157,7 @@ export default {
         role_ids: []
       },
       dialogFormVisible: false,
+      dialogFormCreate: false,
       dialogRoleFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -215,6 +216,7 @@ export default {
       this.getUserList()
       this.resetLeader()
       this.dialogStatus = 'create'
+      this.dialogFormCreate = true // 新增操作
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -224,6 +226,7 @@ export default {
       this.getUserList()
       this.leader = Object.assign({}, row)
       this.dialogStatus = 'update'
+      this.dialogFormCreate = false // 编辑操作
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
