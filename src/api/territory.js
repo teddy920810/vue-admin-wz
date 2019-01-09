@@ -34,7 +34,7 @@ export function deleteTerritory(data) {
 
 export function getTerritory() {
   return request({
-    url: '/Category/all',
+    url: '/Territory/all',
     method: 'get'
   })
 }
